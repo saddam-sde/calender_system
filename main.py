@@ -6,6 +6,7 @@ from datetime import datetime, date
 app = Flask(__name__)
 api = Api(app)
 parser = reqparse.RequestParser()
+room_parser = reqparse.RequestParser()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
@@ -21,6 +22,10 @@ resource_fields = {
     'attendee_list': fields.String
 }
 
+resource_fields_room = {
+    'id': fields.Integer,
+    'room_name': fields.String
+}
 parser.add_argument(
     'event',
     type=str,
@@ -69,6 +74,13 @@ parser.add_argument(
     required=True
 )
 
+room_parser.add_argument(
+    'room_name',
+    type=str,
+    help='Room should be present',
+    required=True
+)
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event = db.Column(db.String, nullable=False)
@@ -79,10 +91,28 @@ class Event(db.Model):
     meeting_room = db.Column(db.String, nullable=False)
     attendee_list = db.Column(db.String)
 
+class Rooms(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room_name = db.Column(db.String, nullable=False)
 
 # with app.app_context():
 #     db.create_all()
 
+class RoomDetails(Resource):
+    @marshal_with(resource_fields_room)
+    def post(self):
+        args = room_parser.parse_args()
+        room_name = f"{args['room_name']}"
+        room = Rooms(room_name = room_name)
+        db.session.add(room)
+        db.session.commit()
+    
+    @marshal_with(resource_fields_room)
+    def get(self):
+        result = Rooms.query.all()
+        return result
+
+#Get the event details
 class EventDetails(Resource):
     @marshal_with(resource_fields)
     def get(self, id):
@@ -112,6 +142,7 @@ class Calender(Resource):
 
 api.add_resource(Calender, '/create_event')
 api.add_resource(EventDetails, '/Event/<int:id>')
+api.add_resource(RoomDetails, '/Rooms')
 
 if __name__ == "__main__":
     app.run(debug=True)
