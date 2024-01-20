@@ -146,7 +146,6 @@ class EventDetails(Resource):
     @marshal_with(resource_fields)
     def get(self, id=None):
         if id is not None:
-            print('id = ', id)
             result = Event.query.filter_by(id=id).first()
         else:
             result = Event.query.all()

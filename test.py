@@ -31,7 +31,9 @@ room = {
         "room_name" : "Room B"
 }
 
-response = requests.get(BASE_URL + "/Event")
+
+"""Get Event Details"""
+response = requests.get(BASE_URL + "/Event/1")
 print("response : ", response.json())
 
 input("Room List")
@@ -43,5 +45,10 @@ print("response : ", response.json())
 # print(response.json)
 
 input("Creating the event")
+"""Conflicting unit test"""
 response = requests.post(BASE_URL + "/create_event", json =json_input)
-print(response.json())
+print(response.json)
+
+"""[datetime.date(2024, 1, 20)]
+Meeting room is not avialable"""
+
