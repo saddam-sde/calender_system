@@ -24,9 +24,9 @@ input("Room List")
 response = requests.get(BASE_URL + "/Rooms")
 print("response : ", response.json())
 
-input('Adding Room A in the room db')
-response = requests.post(BASE_URL + "/Rooms", json =room)
-print(response.json)
+# input('Adding Room A in the room db')
+# response = requests.post(BASE_URL + "/Rooms", json =room)
+# print(response.json)
 
 input("Creating the event")
 response = requests.post(BASE_URL + "/create_event", json =json_input)

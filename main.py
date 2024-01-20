@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, fields, marshal_with, reqparse, inputs
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
+import json
 
 app = Flask(__name__)
 api = Api(app)
@@ -98,6 +99,27 @@ class Rooms(db.Model):
 # with app.app_context():
 #     db.create_all()
 
+class MeetScheduler:
+    def check_availability(event , date , start_time , end_time,\
+                          meeting_room , attendee_list ):
+        result = Rooms.query.all()
+        room_names = [room.room_name for room in result]
+        print(room_names, type(room_names))
+        if meeting_room in room_names:
+            event_data = Event.query.all()
+            meeting_scheduled_date = [sch.date for sch in event_data]
+            room_occupied = [room.meeting_room for room in event_data]
+            print(meeting_scheduled_date)
+            if date in meeting_scheduled_date:
+                if meeting_room in room_occupied:
+                    print("Meeting room is not avialable")
+        else:
+            response = {
+            'statusCode': 204,
+            'body': json.dumps({'error': "Room not present in Room list"})
+        }
+
+
 class RoomDetails(Resource):
     @marshal_with(resource_fields_room)
     def post(self):
@@ -132,13 +154,14 @@ class Calender(Resource):
         end_time = f"{args['end_time']}"
         meeting_room = f"{args['meeting_room']}"
         attendee_list = f"{args['attendee_list']}"
-
-        new_event = Event(event = event, coordinator = coordinator, date = date, start_time = start_time, end_time= end_time, \
+        MeetScheduler.check_availability(event = event,  date = date, start_time = start_time, end_time= end_time, \
                           meeting_room = meeting_room, attendee_list = attendee_list)
-        db.session.add(new_event)
-        db.session.commit()
+        # new_event = Event(event = event, coordinator = coordinator, date = date, start_time = start_time, end_time= end_time, \
+        #                   meeting_room = meeting_room, attendee_list = attendee_list)
+        # db.session.add(new_event)
+        # db.session.commit()
 
-        return {"success"}
+        return "Response"
 
 api.add_resource(Calender, '/create_event')
 api.add_resource(EventDetails, '/Event/<int:id>')
