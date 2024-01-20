@@ -1,9 +1,6 @@
-# calender_system
- This is a calender system application for managing and scheduling meeting and conferences.
+# Calender System - Event Scheduling App
 
-# MeetScheduler - Event Scheduling App
-
-MeetScheduler is a Flask-based event scheduling application that allows users to schedule events, check room availability, and manage room details.
+Calender System is a Flask-based event scheduling application that allows users to schedule events, check room availability, and manage room details.
 
 ## Features
 
@@ -38,10 +35,17 @@ The application checks room availability before scheduling a new event, ensuring
 
 ## Usage
 
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+
+
+## Usage
+
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/meetscheduler.git
-   cd meetscheduler
+   git clone https://github.com/saddam-sde/calender_system.git
+   cd calender_system
 
 ## Usage
 
