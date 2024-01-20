@@ -102,22 +102,29 @@ class Rooms(db.Model):
 class MeetScheduler:
     def check_availability(event , date , start_time , end_time,\
                           meeting_room , attendee_list ):
+        time_format = "%H:%M"
         result = Rooms.query.all()
         room_names = [room.room_name for room in result]
-        print(room_names, type(room_names))
+
         if meeting_room in room_names:
             event_data = Event.query.all()
             meeting_scheduled_date = [sch.date for sch in event_data]
-            room_occupied = [room.meeting_room for room in event_data]
             print(meeting_scheduled_date)
+            print(type(date))
+
             if date in meeting_scheduled_date:
+                room_occupied = [room.meeting_room for room in event_data]
+                
                 if meeting_room in room_occupied:
-                    print("Meeting room is not avialable")
+                        event_confl = [{"start_time" : event.start_time, "end_time" : event.end_time} 
+                              for event in event_data if event.meeting_room == meeting_room]
+                        for i in event_confl:
+                            if datetime.strptime(i['start_time'], time_format).time() < datetime.strptime(end_time, time_format).time() \
+                                and datetime.strptime(i['end_time'], time_format).time() >datetime.strptime(start_time, time_format).time():
+                                    return False
+                return True
         else:
-            response = {
-            'statusCode': 204,
-            'body': json.dumps({'error': "Room not present in Room list"})
-        }
+            return False
 
 
 class RoomDetails(Resource):
@@ -137,10 +144,13 @@ class RoomDetails(Resource):
 #Get the event details
 class EventDetails(Resource):
     @marshal_with(resource_fields)
-    def get(self, id):
-        print('id = ', id)
-        result = Event.query.filter_by(id = id).first()
-        return result
+    def get(self, id=None):
+        if id is not None:
+            print('id = ', id)
+            result = Event.query.filter_by(id=id).first()
+        else:
+            result = Event.query.all()
+            return result
     
 class Calender(Resource):
     
@@ -154,17 +164,18 @@ class Calender(Resource):
         end_time = f"{args['end_time']}"
         meeting_room = f"{args['meeting_room']}"
         attendee_list = f"{args['attendee_list']}"
-        MeetScheduler.check_availability(event = event,  date = date, start_time = start_time, end_time= end_time, \
-                          meeting_room = meeting_room, attendee_list = attendee_list)
-        # new_event = Event(event = event, coordinator = coordinator, date = date, start_time = start_time, end_time= end_time, \
-        #                   meeting_room = meeting_room, attendee_list = attendee_list)
-        # db.session.add(new_event)
-        # db.session.commit()
-
-        return "Response"
+        if MeetScheduler.check_availability(event = event,  date = date, start_time = start_time, end_time= end_time, \
+                          meeting_room = meeting_room, attendee_list = attendee_list):
+            new_event = Event(event = event, coordinator = coordinator, date = date, start_time = start_time, end_time= end_time, \
+                            meeting_room = meeting_room, attendee_list = attendee_list)
+            db.session.add(new_event)
+            db.session.commit()
+        else:
+            return  {"message": "Failed to create event"}
+        return {"message": "Event Created"}
 
 api.add_resource(Calender, '/create_event')
-api.add_resource(EventDetails, '/Event/<int:id>')
+api.add_resource(EventDetails, '/Event','/Event/<int:id>')
 api.add_resource(RoomDetails, '/Rooms')
 
 if __name__ == "__main__":
