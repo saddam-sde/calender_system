@@ -83,12 +83,14 @@ class Event(db.Model):
 # with app.app_context():
 #     db.create_all()
 
-class calender(Resource):
+class EventDetails(Resource):
     @marshal_with(resource_fields)
     def get(self, id):
         print('id = ', id)
         result = Event.query.filter_by(id = id).first()
         return result
+    
+class Calender(Resource):
     
     @marshal_with(resource_fields)
     def post(self):
@@ -108,7 +110,8 @@ class calender(Resource):
 
         return {"success"}
 
-api.add_resource(calender, '/create_event')
+api.add_resource(Calender, '/create_event')
+api.add_resource(EventDetails, '/Event/<int:id>')
 
 if __name__ == "__main__":
     app.run(debug=True)

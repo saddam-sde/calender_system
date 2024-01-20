@@ -13,12 +13,8 @@ json_input = {
         "attendee_list" : "[saddam]"
 }
 
-test = {
-        "event" : "Daily standup"
-}
-
-# response = requests.get(BASE_URL + "/first/1")
-# print("response : ", response.json())
+response = requests.get(BASE_URL + "/Event/1")
+print("response : ", response.json())
 
 input("Creating the event")
 response = requests.post(BASE_URL + "/create_event", json =json_input)
