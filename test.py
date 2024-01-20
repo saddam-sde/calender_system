@@ -4,18 +4,33 @@ BASE_URL = "http://127.0.0.1:5000"
 
 
 json_input = {
-        "event" : "Daily standup",
+        "event" : "Daily ",
         "coordinator" : "saddam",
-        "date" : "2024-01-20",
+        "date" : "2024-01-21",
         "start_time": "10:00",
         "end_time" : "11:00",
         "meeting_room" : "Room A",
         "attendee_list" : "[saddam]"
 }
 
+# json_input = {
+#         "event" : "Daily standup 2",
+#         "coordinator" : "saddam",
+#         "date" : "2024-01-20",
+#         "start_time": "04:00",
+#         "end_time" : "05:00",
+#         "meeting_room" : "Room B",
+#         "attendee_list" : "[saddam]"
+# }
+
+# room = {
+#         "room_name" : "Room A"
+# }
+
 room = {
-        "room_name" : "Room A"
+        "room_name" : "Room B"
 }
+
 
 """Get Event Details"""
 response = requests.get(BASE_URL + "/Event/1")
@@ -36,3 +51,4 @@ print(response.json)
 
 """[datetime.date(2024, 1, 20)]
 Meeting room is not avialable"""
+
